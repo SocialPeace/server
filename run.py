@@ -1,16 +1,16 @@
+import os
 import cv2
-import numpy as np
 
 from flask import Flask, render_template, Response
 
-from common.yolo_classes import classes
+from yolo.utils import yolo
 from common.body_parts import BODY_PARTS_BODY_25
 from common.body_parts import BODY_PARTS_COCO
 from common.body_parts import BODY_PARTS_MPI
 from common.pose_pairs import POSE_PAIRS_BODY_25
 from common.pose_pairs import POSE_PAIRS_COCO
 from common.pose_pairs import POSE_PAIRS_MPI
-from yolo.utils import yolo
+
 
 app = Flask(__name__)
 camera = cv2.VideoCapture(0)

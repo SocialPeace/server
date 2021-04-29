@@ -1,10 +1,19 @@
+import os
 import cv2
+import numpy as np
 
+from common.yolo_classes import classes
 
 def yolo(frame, size, score_threshold, nms_threshold):
+
+    DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+    
+    WEIGHT_PATH = DIR_PATH+'\yolov4.weights'
+    CFG_PATH = DIR_PATH+'\yolov4.cfg'
+    
     # YOLO 네트워크 불러오기
     #net = cv2.dnn.readNet(f"yolov3_{size}.weights", "yolov3.cfg")
-    net = cv2.dnn.readNet("yolov4.weights", "yolov4.cfg")
+    net = cv2.dnn.readNet(WEIGHT_PATH,CFG_PATH)
     layer_names = net.getLayerNames()
     output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 

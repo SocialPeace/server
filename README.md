@@ -18,3 +18,6 @@ pip install -r requirements.txt
 ```
 python run.py
 ```
+
+*주의*
+weights 파일은 따로 필요하다... 용량이 커서 git에 안올라감

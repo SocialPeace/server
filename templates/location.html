@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=05849d6beafb2d98b06ca449929698da&libraries=services,clusterer,drawing"></script>
+
+
+    <title>Document</title>
+    <style>
+        body{
+            padding: 0px;
+            margin:0px;
+            overflow: hidden;
+            width:100%;
+        }
+        div{
+            width:100%;
+        } 
+        #map{ 
+            width: 100%;
+            min-height:500px;
+            height:80%;
+            margin:auto;
+        }
+    </style>
+</head>
+<body>  
+        <div>
+            <input type="text" placeholder="주소 검색" id="addr">
+            <button onclick="javascript:searchAddr()">검색</button> 
+        </div>
+        <div id="map"></div>
+        <form action="" method="POST">
+            <input type="text" id="name" value="{{current_user.name}}">
+            <input type="text" id="result_addr">
+            <input type="text" id="result_lat">
+            <input type="text" id="result_lng">
+            <input type="submit" value="등록"/>
+        </form>  
+</body>
+<script>
+  var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+    mapOption = {
+        center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+        level: 3 // 지도의 확대 레벨
+    };  
+
+var map = new kakao.maps.Map(mapContainer, mapOption); 
+var geocoder = new kakao.maps.services.Geocoder();
+ 
+// 지도를 클릭했을때 클릭한 위치에 마커를 추가하도록 지도에 클릭이벤트를 등록합니다
+kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
+    // 클릭한 위치에 마커를 표시합니다 
+    addMarker(mouseEvent.latLng);             
+});
+
+ 
+var markers = []; 
+addMarker(new kakao.maps.LatLng(33.450701, 126.570667));
+
+
+function addMarker(position) {
+    var result_addr = document.getElementById('result_addr');
+    var result_lat = document.getElementById('result_lat');
+    var result_lng = document.getElementById('result_lng');
+    
+     for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+    }   
+    geocoder.coord2RegionCode(position.getLng(), position.getLat() , function(result, status) {
+        if (status === kakao.maps.services.Status.OK) {
+            console.log(result[0].address_name);
+             result_addr.value =  result[0].address_name;    
+             result_lat.value =  result[0].y;    
+             result_lng.value =  result[0].x;    
+        }
+    });       
+    var marker = new kakao.maps.Marker({
+        draggable:true,
+        position: position
+    });
+    kakao.maps.event.addListener(marker, 'dragstart', function() {  
+        geocoder.coord2RegionCode(position.getLng(), position.getLat() , function(result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+                console.log(result[0].address_name);
+                result_addr.value =  result[0].address_name;    
+                result_lat.value =  result[0].y;    
+                result_lng.value =  result[0].x;    
+            }
+        });  
+    });    
+
+ 
+    marker.setMap(map); 
+    markers.push(marker);
+}
+function searchAddr(){
+    var addr = document.getElementById('addr');
+     
+    // 주소로 좌표를 검색합니다
+    geocoder.addressSearch(addr.value, function(result, status) {
+        if (status === kakao.maps.services.Status.OK) {
+              
+            console.log(result);
+            var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+            addMarker(coords);   
+            map.setCenter(coords);
+        } 
+    });    
+}
+
+</script>
+</html>
